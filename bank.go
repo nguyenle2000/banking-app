@@ -2,60 +2,75 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"example.com/bankingapp/operation"
 )
 
-const balanceFiles = "account.txt"
+const accountBalanceFiles = "balance.txt"
 
 func main() {
-	var accountBalance, err = operation.ReadBalanceFromFiles(balanceFiles)
-	if err != nil {
-		log.Fatal()
-	}
-	var choice int
+	var userAccountBalance = 0.0
+	userAccountBalance = operation.ReadFiles(accountBalanceFiles)
 	for {
 		operation.DisplayMessage()
-		fmt.Println("Please choose option to continue")
-		fmt.Scan(&choice)
+		fmt.Println("Please choose your option to continue")
+		optioninput := operation.PromptInput("Option: ")
 
-		switch choice {
+		switch optioninput {
 		case 1:
-			fmt.Printf("Your balance is %v", accountBalance)
+			fmt.Printf("Your account balance: %v\n", userAccountBalance)
 			continue
 		case 2:
-			var deposit float64
-			fmt.Printf("Enter your deposit: ")
-			fmt.Scan(&deposit)
+			var userDepositAmount float64
+			fmt.Printf("Please enter your deposit amount\n")
+			fmt.Scan(&userDepositAmount)
 
-			if deposit < 0 {
-				fmt.Println("Deposit must be positive")
+			if userDepositAmount <= 0 {
+				fmt.Printf("Your deposit amount should be a positive number. Please try again!\n")
 			} else {
-				accountBalance += deposit
-				fmt.Printf("You have deposited %v to your account. Account balance update: %v", deposit, accountBalance)
-				operation.WriteBalanceToFiles(accountBalance, balanceFiles)
+				userAccountBalance += userDepositAmount
+				fmt.Printf("You've successfully deposit %v to your bank account\n Account Balance is updated: %v\n", userDepositAmount, userAccountBalance)
+				operation.WriteFiles(userAccountBalance, accountBalanceFiles)
 				continue
 			}
 		case 3:
-			var withdraw float64
-			fmt.Printf("Enter your withdrawal: ")
-			fmt.Scan(&withdraw)
+			var userWithdrawAmount float64
+			fmt.Printf("Please enter your deposit amount: ")
+			fmt.Scan(&userWithdrawAmount)
 
-			if withdraw < 0 {
-				fmt.Println("Withdraw must be positive")
-			} else if withdraw > accountBalance {
-				fmt.Println("Bạn không thể rút tiền vượt quá mức số dư trong tài khoản")
+			if userWithdrawAmount <= 0 {
+				fmt.Printf("Your withdrawal amount should be a positive number. Please try again!\n")
+			} else if userWithdrawAmount > userAccountBalance {
+				fmt.Println("Withdrawal Amount cannot exceeds your account balance")
 			} else {
-				accountBalance -= withdraw
-				fmt.Printf("You have withdraw %v to your account. Account balance update: %v", withdraw, accountBalance)
-				operation.WriteBalanceToFiles(accountBalance, balanceFiles)
+				userAccountBalance -= userWithdrawAmount
+				fmt.Printf("You've successfully deposit %v to your bank account\n Account Balance is updated: %v\n", userWithdrawAmount, userAccountBalance)
+				operation.WriteFiles(userAccountBalance, accountBalanceFiles)
 				continue
 			}
+		case 4:
+			fmt.Println("Calculate Earning After Tax")
+			var revenue float64
+			var expenses float64
+			var taxRate float64
+			fmt.Printf("Please input your profit here: ")
+			fmt.Scan(&revenue)
+			fmt.Printf("Please input your expenses: ")
+			fmt.Scan(&expenses)
+			fmt.Printf("Please Input your tax rate: ")
+			fmt.Scan(&taxRate)
+
+			beforeTaxEarning := operation.EarningBeforeTax(revenue, expenses)
+			fmt.Printf("Your earning before tax: %v\n", beforeTaxEarning)
+
+			earningAfterTax := operation.EarningAfterTax(beforeTaxEarning, taxRate)
+
+			fmt.Printf("Your earning after tax: %v\n", earningAfterTax)
+			continue
+
 		default:
-			fmt.Println("Thanks for choosing Go Banking")
-			return
+			fmt.Println("Thanks for choosing Go Bank")
 		}
-		fmt.Println("Goodbye!")
+
 	}
 }

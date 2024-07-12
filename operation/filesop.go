@@ -6,22 +6,22 @@ import (
 	"strconv"
 )
 
-func WriteBalanceToFiles(fileName float64, value string) {
-	converText := fmt.Sprint(fileName)
-	os.WriteFile(value, []byte(converText), 0644)
-}
-
-func ReadBalanceFromFiles(fileName string) (float64, error) {
+func ReadFiles(fileName string) float64 {
 	data, err := os.ReadFile(fileName)
 	if err != nil {
-		return 0, fmt.Errorf("can't read file %v", data)
+		return 0
 	}
-	fileText := string(data)
-
-	fileRead, err := strconv.ParseFloat(fileText, 64)
+	textConvertion := string(data)
+	float, err := strconv.ParseFloat(textConvertion, 64)
 	if err != nil {
-		return 0, err
+		return 0
 	}
-	return fileRead, nil
+	return float
+
+}
+
+func WriteFiles(writeFiles float64, writeFloatAsString string) {
+	data := fmt.Sprint(writeFiles)
+	os.WriteFile(writeFloatAsString, []byte(data), 0644)
 
 }
